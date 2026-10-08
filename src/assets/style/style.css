@@ -4,7 +4,8 @@
   --border: #dbe5e0; --accent: #0f9b76; --accent-d: #0b7f60; --tint: #eef7f3;
 
   box-sizing: border-box;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   padding: calc(20px + env(safe-area-inset-top, 0px)) 14px calc(20px + env(safe-area-inset-bottom, 0px));
   color: var(--text);
