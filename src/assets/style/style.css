@@ -1,0 +1,98 @@
+/* All styles are scoped under .panda-page so they won't leak into your app */
+.panda-page {
+  --bg1: #0a8f6c; --bg2: #35cf9f; --card: #ffffff; --text: #16221d; --muted: #7a8a83;
+  --border: #dbe5e0; --accent: #0f9b76; --accent-d: #0b7f60; --tint: #eef7f3;
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 14px calc(20px + env(safe-area-inset-bottom, 0px));
+  color: var(--text);
+  background: radial-gradient(circle at 25% 15%, var(--bg2), var(--bg1) 70%) var(--bg1);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  .panda-page {
+    --bg1: #06402f; --bg2: #0d6a50; --card: #17241f; --text: #e8f1ec; --muted: #8fa399;
+    --border: #2e4439; --accent: #2fc597; --accent-d: #25a67e; --tint: #1d2f27;
+  }
+}
+.panda-page *, .panda-page *::before, .panda-page *::after { box-sizing: border-box; }
+
+.pl-shell {
+  width: 100%; max-width: 880px; background: var(--card); border-radius: 36px;
+  display: grid; grid-template-columns: 1fr 1fr; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .22);
+}
+.pl-left { padding: 30px 38px 34px; text-align: center; }
+.pl-right {
+  padding: 40px 34px; display: flex; flex-direction: column; justify-content: center;
+  background: var(--tint); text-align: left;
+}
+.pl-right h2 { margin: 0 0 10px; font-size: 26px; }
+.pl-right p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+.pl-left h1 { margin: 0; font-size: 28px; }
+.pl-sub { margin: 4px 0 6px; color: var(--muted); font-size: 13px; }
+
+.panda {
+  width: 132px; height: 112px; display: block; margin: 0 auto -16px;
+  position: relative; z-index: 2; pointer-events: none;
+}
+
+.pl-field { position: relative; margin-top: 12px; }
+.pl-ic {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; color: var(--muted);
+}
+.pl-field input {
+  width: 100%; padding: 14px 48px 14px 44px; font-size: 15px; color: var(--text);
+  background: transparent; border: 1.5px solid var(--border); border-radius: 999px; outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.pl-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.pl-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: 0; cursor: pointer; padding: 6px; color: var(--muted); display: flex;
+}
+.pl-toggle:hover, .pl-toggle:focus-visible { color: var(--accent); }
+.pl-toggle svg { width: 19px; height: 19px; }
+
+.pl-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 14px 4px 0; font-size: 12.5px; color: var(--muted);
+}
+.pl-row label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.pl-row input { accent-color: var(--accent); }
+.pl-row a, .pl-foot a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+.pl-submit {
+  width: 100%; margin-top: 20px; padding: 14px; font-size: 15px; font-weight: 700; color: #fff;
+  background: var(--accent); border: 0; border-radius: 999px; cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+.pl-submit:hover { background: var(--accent-d); }
+.pl-submit:active { transform: scale(.98); }
+.pl-foot { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
+
+.pl-toast-wrap {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10; pointer-events: none;
+  display: flex; justify-content: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px 0;
+}
+.pl-toast {
+  background: #1f2623; color: #fff; font-size: 13.5px; padding: 12px 18px; border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+  opacity: 0; transform: translateY(-8px); transition: opacity .25s, transform .25s;
+}
+.pl-toast.show { opacity: 1; transform: translateY(0); }
+.pl-toast:empty { display: none; }
+
+@media (max-width: 760px) {
+  .pl-shell { grid-template-columns: 1fr; border-radius: 28px; }
+  .pl-right { display: none; }
+  .pl-left { padding: 24px 22px 28px; }
+}
