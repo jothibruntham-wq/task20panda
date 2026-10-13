@@ -2,6 +2,27 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import "../assets/style/style.css";
 
+/* ---------- cloud background geometry (SVG user units) ---------- */
+// bottom scalloped edge: circles whose lowest point touches the screen bottom
+const BOTTOM_BUMPS = Array.from({ length: 9 }, (_, i) => {
+  const r = 115 + (i % 3) * 8;
+  return { cx: -105 + i * 210, cy: 170 - r, r };
+});
+const BOTTOM_SPARKS = [
+  { x: 195, y: 150, r: 2.6 }, { x: 420, y: 140, r: 2 }, { x: 640, y: 158, r: 3 },
+  { x: 835, y: 147, r: 2.2 }, { x: 1055, y: 156, r: 2.8 }, { x: 1265, y: 142, r: 2 },
+  { x: 1470, y: 153, r: 2.6 }, { x: 95, y: 161, r: 1.8 },
+];
+// top-right scalloped corner
+const CORNER_BUMPS = [
+  { cx: 40, cy: 14, r: 75 }, { cx: 170, cy: 70, r: 85 }, { cx: 310, cy: 118, r: 90 },
+  { cx: 450, cy: 150, r: 85 }, { cx: 590, cy: 172, r: 80 }, { cx: 730, cy: 186, r: 75 },
+];
+const CORNER_SPARKS = [
+  { x: 520, y: 40, r: 2.6 }, { x: 640, y: 90, r: 2 }, { x: 700, y: 30, r: 3 },
+  { x: 420, y: 12, r: 2 }, { x: 735, y: 95, r: 2.4 },
+];
+
 export default function Home() {
   const rootRef = useRef(null);
   const svgRef = useRef(null);
@@ -104,6 +125,37 @@ export default function Home() {
         });
       };
       blink();
+
+      /* ---------- looping cloud background (video-like) ---------- */
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        // cloud bumps gently "breathe" and drift sideways
+        gsap.utils.toArray(".bump", root).forEach((c, i) => {
+          const r = parseFloat(c.getAttribute("r"));
+          gsap.to(c, {
+            attr: { r: r + 9 }, duration: 2.6 + (i % 4) * 0.55,
+            ease: "sine.inOut", yoyo: true, repeat: -1, delay: i * 0.17,
+          });
+          gsap.to(c, {
+            x: (i % 2 ? 1 : -1) * (8 + (i % 3) * 4), duration: 5 + (i % 3) * 1.4,
+            ease: "sine.inOut", yoyo: true, repeat: -1, delay: i * 0.1,
+          });
+        });
+        // sparkles twinkle and float
+        gsap.utils.toArray(".spark", root).forEach((s) => {
+          gsap.fromTo(s, { opacity: 0.08 }, {
+            opacity: 0.9, duration: 1 + Math.random() * 1.6, ease: "sine.inOut",
+            yoyo: true, repeat: -1, delay: Math.random() * 2,
+          });
+          gsap.to(s, {
+            y: -(6 + Math.random() * 10), duration: 3 + Math.random() * 3,
+            ease: "sine.inOut", yoyo: true, repeat: -1,
+          });
+        });
+        // slow shimmer on the green behind the clouds
+        gsap.to(root, {
+          "--bg-shift": "12%", duration: 9, ease: "sine.inOut", yoyo: true, repeat: -1,
+        });
+      }
     }, root);
 
     return () => {
@@ -140,6 +192,52 @@ export default function Home() {
 
   return (
     <div className="panda-page" ref={rootRef}>
+      {/* animated cloud background */}
+      <div className="pl-sky" aria-hidden="true">
+        <div className="pl-white" />
+
+        <svg
+          className="pl-cloud-corner"
+          viewBox="0 0 760 300"
+          preserveAspectRatio="xMaxYMin meet"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="plCornerGrad" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" style={{ stopColor: "var(--bg2)" }} />
+              <stop offset="1" style={{ stopColor: "var(--bg1)" }} />
+            </linearGradient>
+          </defs>
+          <rect x="2" width="758" height="298" fill="url(#plCornerGrad)" />
+          {/* white body of the cloud; extends past the viewBox so no hairline seams show */}
+          <polygon
+            className="pl-fill"
+            points="-10,-10 190,-10 190,40 310,118 450,150 590,172 730,186 800,190 800,310 -10,310"
+          />
+          {CORNER_BUMPS.map((b, i) => (
+            <circle key={i} className="bump pl-fill" cx={b.cx} cy={b.cy} r={b.r} />
+          ))}
+          {CORNER_SPARKS.map((s, i) => (
+            <circle key={i} className="spark" cx={s.x} cy={s.y} r={s.r} />
+          ))}
+        </svg>
+
+        <svg
+          className="pl-cloud-bottom"
+          viewBox="0 0 1600 170"
+          preserveAspectRatio="xMidYMax slice"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect className="pl-fill" x="0" y="0" width="1600" height="80" />
+          {BOTTOM_BUMPS.map((b, i) => (
+            <circle key={i} className="bump pl-fill" cx={b.cx} cy={b.cy} r={b.r} />
+          ))}
+          {BOTTOM_SPARKS.map((s, i) => (
+            <circle key={i} className="spark" cx={s.x} cy={s.y} r={s.r} />
+          ))}
+        </svg>
+      </div>
+
       <div className={`pl-toast-wrap`} aria-live="polite">
         <div className={`pl-toast ${toast ? "show" : ""}`}>{toast}</div>
       </div>
